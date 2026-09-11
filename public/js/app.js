@@ -19,9 +19,31 @@ class AppController {
     this.callDecisionState = "IDLE"; // ALLOW, VERIFY, REPORTED, BLOCKED, IDLE
 
     this.initUI();
+    this.checkBackendHealth();
     this.fetchModelMetadata();
     this.loadDiskDatasets();
     this.fetchLiveStats();
+  }
+
+  async checkBackendHealth() {
+    const backendBadge = document.getElementById('backend-status-badge');
+    const backendLabel = document.getElementById('backend-status-label');
+    const health = await this.apiClient.getHealth();
+    if (health && (health.status === 'healthy' || health.pyTorchModelStatus)) {
+      if (backendBadge) {
+        backendBadge.innerHTML = `<span>Backend: <strong style="color:var(--status-low);">CONNECTED</strong> | PyTorch: <strong style="color:var(--status-low);">LOADED</strong></span>`;
+      } else if (backendLabel) {
+        backendLabel.innerText = "CONNECTED (PyTorch Loaded)";
+        backendLabel.style.color = "var(--status-low)";
+      }
+    } else {
+      if (backendBadge) {
+        backendBadge.innerHTML = `<span>Backend: <strong style="color:var(--status-critical);">OFFLINE</strong></span>`;
+      } else if (backendLabel) {
+        backendLabel.innerText = "OFFLINE";
+        backendLabel.style.color = "var(--status-critical)";
+      }
+    }
   }
 
   initUI() {
@@ -558,8 +580,12 @@ class AppController {
       const elCalls = document.getElementById('stat-total-calls');
       const elBlocked = document.getElementById('stat-attacks-blocked');
 
-      if (elCalls) elCalls.innerText = stats.totalCallsMonitored.toLocaleString();
-      if (elBlocked) elBlocked.innerText = stats.attacksBlocked.toLocaleString();
+      if (elCalls) {
+        elCalls.innerText = typeof stats.totalCallsMonitored === 'number' ? stats.totalCallsMonitored.toLocaleString() : stats.totalCallsMonitored;
+      }
+      if (elBlocked) {
+        elBlocked.innerText = typeof stats.attacksBlocked === 'number' ? stats.attacksBlocked.toLocaleString() : stats.attacksBlocked;
+      }
     }
   }
 

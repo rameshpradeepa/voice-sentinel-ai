@@ -36,11 +36,14 @@
       <div id="blockchain-status-badge" class="metric-pill">
         <span>Blockchain: <strong style="color:var(--status-medium);">OFFLINE (SHA-256 Verified)</strong></span>
       </div>
+      <div id="backend-status-badge" class="metric-pill">
+        <span>Backend: <strong id="backend-status-label" style="color:var(--status-low);">CHECKING...</strong></span>
+      </div>
       <div class="metric-pill">
         <span>Supported Formats: <strong style="color:var(--accent-cyan);">WAV, FLAC, OGG, MP3, AAC</strong></span>
       </div>
       <div class="metric-pill">
-        <span>PyTorch Accuracy: <strong id="stat-accuracy" style="color:var(--status-low);">99.4%</strong></span>
+        <span>PyTorch Accuracy: <strong id="stat-accuracy" style="color:var(--status-low);">NOT AVAILABLE</strong></span>
       </div>
     </div>
   </header>
@@ -48,39 +51,40 @@
   <!-- Navigation Tabs Header -->
   <nav class="tabs-header">
     <button class="tab-btn active" data-tab="pane-inspector">
-      <span>🎙️</span> Live Voice Inspector
+      🎙️ Live Voice Inspector & Forensics
     </button>
     <button class="tab-btn" data-tab="pane-simulator">
-      <span>📞</span> Call Simulator
+      📞 Call Simulator & Attacks
     </button>
     <button class="tab-btn" data-tab="pane-datasets">
-      <span>📊</span> Dataset Explorer
+      📁 Real Dataset Explorer
     </button>
     <button class="tab-btn" data-tab="pane-profiles">
-      <span>👤</span> Biometric Profiles
+      👤 Biometric Profiles
     </button>
-    <button class="tab-btn" data-tab="pane-model">
-      <span>🧠</span> PyTorch Model Info
-    </button>
-    <button class="tab-btn" data-tab="pane-api">
-      <span>⚙️</span> Enterprise API
+    <button class="tab-btn" data-tab="pane-playground">
+      ⚡ API Playground & Audit
     </button>
   </nav>
 
-  <!-- Main Workspace -->
-  <main class="main-content">
-
-    <!-- PANE 1: LIVE VOICE INSPECTOR -->
+  <!-- Main Container -->
+  <main class="dashboard-body">
+    
+    <!-- Pane 1: Live Voice Inspector -->
     <div id="pane-inspector" class="tab-pane active">
       <div class="grid-2col">
         
-        <!-- Left Column: Audio Stream & File Upload Input -->
+        <!-- Left Column: Audio Capture, Upload, Spectrogram & Oscilloscope -->
         <div style="display:flex; flex-direction:column; gap:1.25rem;">
           
-          <!-- Section A: Voice Input Panel -->
+          <!-- Live Audio Streamer & File Upload Form Inspector -->
           <div class="card">
             <div class="card-title">
-              <span>Section A: Audio Stream & File Input</span>
+              <span>Section A: Audio Source & Real-Time Stream Capture</span>
+              <span id="ws-connection-indicator" style="font-size:0.75rem; color:var(--text-muted);">WebSocket 16kHz Stream</span>
+            </div>
+            
+            <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
               <div style="display:flex; gap:0.5rem;">
                 <button id="btn-start-mic" class="btn btn-primary">🎙️ Start 3s Stream Mic</button>
                 <button id="btn-stop-mic" class="btn btn-secondary" disabled>⏹️ Stop Stream</button>
@@ -90,7 +94,7 @@
             <!-- Audio File Upload Box (WAV, FLAC, OGG, MP3, AAC) -->
             <div style="margin-top:0.75rem; padding-top:0.75rem; border-top:1px dashed var(--border-color); display:flex; flex-direction:column; gap:0.75rem;">
               <div style="display:flex; align-items:center; gap:0.75rem;">
-                <input type="file" id="audio-file-input" accept="audio/*,.wav,.flac,.ogg,.mp3,.aac" style="font-size:0.82rem; color:var(--text-muted); flex:1;">
+                <input type="file" id="audio-file-input" accept="audio/*,.wav,.flac,.ogg,.mp3,.aac,.m4a" style="font-size:0.82rem; color:var(--text-muted); flex:1;">
                 <button id="btn-analyze-file" class="btn btn-secondary" style="font-size:0.8rem; padding:0.4rem 0.85rem;">🔍 Analyze Audio File</button>
               </div>
 
@@ -100,13 +104,13 @@
                   <div>File Name: <strong id="sel-file-name" style="color:var(--accent-cyan);">--</strong></div>
                   <div>Format: <strong id="sel-file-format" style="color:var(--text-main);">--</strong></div>
                   <div>File Size: <strong id="sel-file-size">--</strong></div>
-                  <div>Status: <span id="sel-file-status" class="verdict-badge verdict-low" style="padding:0.1rem 0.5rem; font-size:0.68rem;">READY FOR INFERENCE</span></div>
+                  <div>Status: <span id="sel-file-status" class="verdict-badge verdict-low" style="padding:0.1rem 0.5rem; font-size:0.68rem;">READY</span></div>
                 </div>
               </div>
 
               <!-- Pipeline Progress Tracker Bar -->
               <div id="upload-pipeline-tracker" style="display:none; background:rgba(0,0,0,0.4); padding:0.6rem; border-radius:6px; border:1px solid var(--border-glow); font-size:0.78rem; text-align:center;">
-                <div id="pipeline-status-text" style="font-weight:700; color:var(--accent-cyan); font-family:var(--font-mono);">UPLOADING...</div>
+                <div id="pipeline-status-text" style="font-weight:700; color:var(--accent-cyan); font-family:var(--font-mono);">UPLOADING</div>
               </div>
             </div>
           </div>
@@ -197,15 +201,15 @@
             <div style="display:flex; flex-direction:column; gap:0.6rem; margin-bottom:1.25rem; background:rgba(4, 6, 14, 0.6); padding:0.85rem; border-radius:8px; border:1px solid var(--border-color);">
               <div style="display:flex; justify-content:space-between; font-size:0.88rem;">
                 <span>AI Probability (PyTorch Model):</span>
-                <strong id="val-ai-prob" style="color:var(--status-critical); font-family:var(--font-mono); font-size:1.1rem;">0.0%</strong>
+                <strong id="val-ai-prob" style="color:var(--status-critical); font-family:var(--font-mono); font-size:1.1rem;">--</strong>
               </div>
-              <div class="metric-bar-bg" style="width:100%; height:8px;"><div id="bar-ai-prob" class="metric-bar-fill" style="background:var(--status-critical);"></div></div>
+              <div class="metric-bar-bg" style="width:100%; height:8px;"><div id="bar-ai-prob" class="metric-bar-fill" style="background:var(--status-critical); width:0%;"></div></div>
 
               <div style="display:flex; justify-content:space-between; font-size:0.88rem; margin-top:0.4rem;">
                 <span>Human Probability:</span>
-                <strong id="val-human-prob" style="color:var(--status-low); font-family:var(--font-mono); font-size:1.1rem;">100.0%</strong>
+                <strong id="val-human-prob" style="color:var(--status-low); font-family:var(--font-mono); font-size:1.1rem;">--</strong>
               </div>
-              <div class="metric-bar-bg" style="width:100%; height:8px;"><div id="bar-human-prob" class="metric-bar-fill" style="background:var(--status-low); width:100%;"></div></div>
+              <div class="metric-bar-bg" style="width:100%; height:8px;"><div id="bar-human-prob" class="metric-bar-fill" style="background:var(--status-low); width:0%;"></div></div>
             </div>
 
             <!-- Risk Gauge & Verdict -->

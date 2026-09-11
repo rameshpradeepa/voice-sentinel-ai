@@ -139,16 +139,36 @@ def create_mel_filterbank(sr=TARGET_SAMPLE_RATE, n_fft=N_FFT, n_mels=N_MELS):
 _MEL_FILTERBANK_CACHE = create_mel_filterbank()
 
 
+def _safe_stft_overlap(audio_length: int, nperseg: int, hop_length: int) -> int:
+    """Return a valid overlap for the configured FFT window, even with short input audio."""
+    overlap = max(0, nperseg - hop_length)
+    if nperseg <= 1:
+        return 0
+    if audio_length < nperseg:
+        return min(overlap, nperseg - 1)
+    return min(overlap, nperseg - 1)
+
+
+def _pad_audio_for_stft(audio_data: np.ndarray, target_length: int = N_FFT) -> np.ndarray:
+    """Zero-pad short audio to the configured STFT frame length."""
+    if len(audio_data) >= target_length:
+        return audio_data
+    pad_len = target_length - len(audio_data)
+    return np.pad(audio_data, (0, pad_len), mode='constant', constant_values=0.0)
+
+
 def compute_log_mel_spectrogram(audio_chunk, sr=TARGET_SAMPLE_RATE):
     """
     Computes log-Mel Spectrogram array for a 1D audio waveform chunk.
     Output shape: (1, N_MELS, time_steps)
     """
+    audio_chunk = _pad_audio_for_stft(audio_chunk.astype(np.float32), target_length=N_FFT)
+    noverlap = _safe_stft_overlap(len(audio_chunk), N_FFT, HOP_LENGTH)
     _, _, stft_matrix = signal.stft(
         audio_chunk,
         fs=sr,
         nperseg=N_FFT,
-        noverlap=N_FFT - HOP_LENGTH,
+        noverlap=noverlap,
         padded=True
     )
     power_spectrogram = np.abs(stft_matrix) ** 2
@@ -170,7 +190,9 @@ def extract_comprehensive_acoustic_features(audio_data, sr=TARGET_SAMPLE_RATE):
     if len(audio_data) == 0:
         return {}
 
-    freqs, _, stft_matrix = signal.stft(audio_data, fs=sr, nperseg=N_FFT, noverlap=N_FFT - HOP_LENGTH)
+    audio_data = _pad_audio_for_stft(audio_data.astype(np.float32), target_length=N_FFT)
+    noverlap = _safe_stft_overlap(len(audio_data), N_FFT, HOP_LENGTH)
+    freqs, _, stft_matrix = signal.stft(audio_data, fs=sr, nperseg=N_FFT, noverlap=noverlap, padded=True)
     power_spec = np.abs(stft_matrix) ** 2
     mag_spec = np.abs(stft_matrix)
 

@@ -12,7 +12,13 @@ from scipy.io import wavfile
 # Ensure project root is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from backend.audio_decoder import decode_audio_bytes, AudioDecodeError
+from backend.audio_decoder import decode_audio_bytes, AudioDecodeError, find_ffmpeg
+
+
+def test_find_ffmpeg_path():
+    path = find_ffmpeg()
+    assert path is not None
+    assert len(path) > 0
 
 
 def test_ffmpeg_decode_wav_bytes():

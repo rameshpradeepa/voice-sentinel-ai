@@ -26,7 +26,7 @@ from pydantic import BaseModel
 # Internal Imports
 from ml_engine.inference import get_inference_engine
 from ml_engine.preprocessing import extract_comprehensive_acoustic_features, TARGET_SAMPLE_RATE
-from backend.audio_decoder import decode_audio_bytes, AudioDecodeError
+from backend.audio_decoder import decode_audio_bytes, AudioDecodeError, find_ffmpeg
 from backend.prosody_analyzer import analyze_prosody_features
 from backend.biometric_engine import get_biometric_engine
 from backend.risk_engine import get_risk_engine
@@ -38,6 +38,14 @@ app = FastAPI(
     description="Authoritative FastAPI Backend for PyTorch Inference, Prosody Forensics, Security Actions, and Blockchain Audit",
     version="2.0.0"
 )
+
+@app.on_event("startup")
+def startup_event():
+    try:
+        path = find_ffmpeg()
+        print(f"[AudioDecoder] FFmpeg detected:\n{path}")
+    except Exception as e:
+        print(f"[AudioDecoder] Startup Warning: {e}")
 
 app.add_middleware(
     CORSMiddleware,
@@ -397,15 +405,29 @@ def get_model_info():
 
 @app.get("/api/v1/stats")
 def get_system_stats():
+    eval_path = os.path.join("ml_engine", "evaluation.json")
+    acc_str = "NOT AVAILABLE"
+    if os.path.exists(eval_path):
+        try:
+            with open(eval_path, "r") as f:
+                eval_data = json.load(f)
+                if "accuracy" in eval_data:
+                    acc_str = f"{eval_data['accuracy']}%"
+        except Exception:
+            pass
+
+    total_incidents = len(incident_logs)
+    blocked_count = sum(1 for log in incident_logs.values() if log.get("callDecisionState") == "BLOCKED")
+
     return {
         "success": True,
         "data": {
-            "totalCallsMonitored": 18420,
-            "attacksBlocked": 512,
-            "fraudPreventedUSD": 14200000,
-            "pyTorchAccuracy": 99.4,
-            "averageInferenceMs": 38.2,
-            "blockchainLogsCommitted": 512
+            "totalCallsMonitored": total_incidents if total_incidents > 0 else "NOT AVAILABLE",
+            "attacksBlocked": blocked_count if total_incidents > 0 else "NOT AVAILABLE",
+            "fraudPreventedUSD": "NOT AVAILABLE",
+            "pyTorchAccuracy": acc_str,
+            "averageInferenceMs": "NOT AVAILABLE",
+            "blockchainLogsCommitted": "NOT AVAILABLE"
         }
     }
 
@@ -456,10 +478,10 @@ async def websocket_audio_analyzer(websocket: WebSocket):
 
                     audio_hash = compute_sha256_hash(window_bytes)
 
-                    inf_result = inference_engine.predict_audio_bytes(window_bytes)
+                    float_pcm = np.frombuffer(window_bytes, dtype=np.int16).astype(np.float32) / 32768.0
+                    inf_result = inference_engine.predict_audio_array(float_pcm, sample_rate=TARGET_SAMPLE_RATE)
                     ai_prob = inf_result.get("aiProbability", 0.5)
 
-                    float_pcm = np.frombuffer(window_bytes, dtype=np.int16).astype(np.float32) / 32768.0
                     spectral_feats = extract_comprehensive_acoustic_features(float_pcm, TARGET_SAMPLE_RATE)
                     prosody_feats = analyze_prosody_features(float_pcm, TARGET_SAMPLE_RATE)
 
@@ -481,7 +503,14 @@ async def websocket_audio_analyzer(websocket: WebSocket):
                         "humanProbabilityPercent": round((1.0 - ai_prob) * 100.0, 1),
                         "pyTorchVerdict": inf_result.get("verdict", "GENUINE"),
                         "riskResult": risk_result,
-                        "inferenceLatencyMs": inf_result.get("inferenceLatencyMs", 12.0)
+                        "inferenceLatencyMs": inf_result.get("inferenceLatencyMs", 12.0),
+                        "audioMetadata": {
+                            "durationSeconds": round(len(float_pcm) / TARGET_SAMPLE_RATE, 2),
+                            "sampleRateHz": TARGET_SAMPLE_RATE,
+                            "channels": 1,
+                            "fileFormat": "PCM_STREAM",
+                            "chunkCount": 1
+                        }
                     }
 
                     await websocket.send_json(response_payload)

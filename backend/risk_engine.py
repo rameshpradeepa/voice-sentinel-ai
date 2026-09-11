@@ -123,6 +123,7 @@ class SecurityRiskEngine:
             "humanProbabilityPercent": round(human_prob * 100.0, 1),
             "overallRiskScore": overall_risk,
             "riskLevel": risk_level,
+            "alertLevel": risk_level,
             "verdict": verdict,
             "whyDetected": why_detected,
             "availableActions": available_actions,

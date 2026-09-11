@@ -60,6 +60,15 @@ def test_compute_log_mel_spectrogram():
     assert spec.shape[1] == N_MELS
 
 
+def test_extract_comprehensive_acoustic_features_short_audio():
+    short_audio = np.random.randn(160).astype(np.float32)
+    features =__import__('ml_engine.preprocessing', fromlist=['extract_comprehensive_acoustic_features']).extract_comprehensive_acoustic_features(short_audio, sr=TARGET_SAMPLE_RATE)
+    assert isinstance(features, dict)
+    assert 'spectralCentroid' in features
+    assert 'highFreqEnergyRatio' in features
+    assert 'zcr' in features
+
+
 def test_decode_audio_bytes_wav():
     sr = 16000
     signal = (np.random.randn(sr) * 10000).astype(np.int16)

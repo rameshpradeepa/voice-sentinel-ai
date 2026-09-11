@@ -36,8 +36,8 @@ def create_privacy_preserving_log(incident_id, audio_hash, risk_result, model_ve
         "audioHashSha256": audio_hash,
         "overallRiskScore": risk_result["overallRiskScore"],
         "verdict": risk_result["verdict"],
-        "alertLevel": risk_result["alertLevel"],
+        "alertLevel": risk_result.get("alertLevel", risk_result.get("riskLevel", "LOW")),
         "modelVersion": model_version,
-        "subScores": risk_result["subScores"],
+        "subScores": risk_result.get("riskFormulaBreakdown", {}),
         "privacyStatus": "RAW_AUDIO_PURGED_FEATURE_ONLY_LOGGED"
     }

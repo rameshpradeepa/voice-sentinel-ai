@@ -75,7 +75,7 @@ class VoiceDeepfakeInference:
                 "verdict": "INVALID_AUDIO"
             }
 
-        print("[Inference] PyTorch analysis started")
+        print("[PyTorch] Inference started")
         spectrograms, chunks = preprocess_audio_pipeline(audio_data, sample_rate)
         chunk_probabilities = []
 
@@ -91,12 +91,14 @@ class VoiceDeepfakeInference:
         elapsed_ms = round((time.time() - start_time) * 1000.0, 2)
 
         verdict = "AI_GENERATED" if aggregated_prob >= 0.50 else "GENUINE"
-        print("[Inference] PyTorch analysis complete")
+        print("[PyTorch] Inference completed")
 
         return {
             "status": "SUCCESS",
             "aiProbability": round(aggregated_prob, 4),
             "aiProbabilityPercent": round(aggregated_prob * 100.0, 1),
+            "humanProbability": round(1.0 - aggregated_prob, 4),
+            "humanProbabilityPercent": round((1.0 - aggregated_prob) * 100.0, 1),
             "verdict": verdict,
             "totalChunksAnalyzed": len(chunk_probabilities),
             "chunkProbabilities": [round(p, 4) for p in chunk_probabilities],
@@ -111,12 +113,15 @@ class VoiceDeepfakeInference:
         """
         try:
             decoded = decode_audio_bytes(raw_bytes, filename=filename)
-            res = self.predict_audio_array(decoded.audio_data, sample_rate=decoded.sample_rate)
+            res = self.predict_audio_array(
+                decoded["audio"],
+                decoded["sample_rate"]
+            )
             if "status" in res and res["status"] == "SUCCESS":
-                res["audioDurationSec"] = round(decoded.duration_seconds, 2)
-                res["originalSampleRateHz"] = decoded.sample_rate
-                res["originalChannels"] = "Mono" if decoded.channels == 1 else f"{decoded.channels} Channels"
-                res["originalFormat"] = decoded.original_format
+                res["audioDurationSec"] = round(decoded["duration_seconds"], 2)
+                res["originalSampleRateHz"] = decoded["sample_rate"]
+                res["originalChannels"] = "Mono" if decoded["channels"] == 1 else f"{decoded['channels']} Channels"
+                res["originalFormat"] = decoded["original_format"]
             return res
         except Exception as e:
             stderr_msg = getattr(e, 'detail', None) or str(e)

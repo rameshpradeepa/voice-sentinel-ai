@@ -1,20 +1,27 @@
 /**
- * VoiceSentinel AI - FastAPI Backend REST API Client (v3.0)
- * Supports real audio file upload analysis, PyTorch model query, disk dataset exploration,
- * security action execution, and Blockchain audit logs.
+ * VoiceSentinel AI - FastAPI Backend REST API Client (v3.1)
+ * Explicitly connects to http://127.0.0.1:8000 for backend endpoints.
  */
 
 class ApiClient {
   constructor() {
-    this.baseUrl = window.location.hostname ? `${window.location.protocol}//${window.location.hostname}:8000` : 'http://localhost:8000';
+    this.baseUrl = 'http://127.0.0.1:8000';
   }
 
   async getHealth() {
     try {
       const res = await fetch(`${this.baseUrl}/api/health`);
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        return { status: "offline", error: errJson.detail || `HTTP ${res.status}` };
+      }
       return await res.json();
     } catch (err) {
-      return { status: "offline", error: err.message };
+      return {
+        status: "offline",
+        error: "BACKEND_CONNECTION_FAILED",
+        message: "Unable to connect to FastAPI backend at http://127.0.0.1:8000"
+      };
     }
   }
 
@@ -25,9 +32,21 @@ class ApiClient {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        return {
+          success: false,
+          error: errJson.error || "HTTP_ERROR",
+          message: errJson.message || errJson.detail || `HTTP Error ${res.status}`
+        };
+      }
       return await res.json();
     } catch (err) {
-      return { success: false, error: err.message };
+      return {
+        success: false,
+        error: "BACKEND_CONNECTION_FAILED",
+        message: "Unable to connect to FastAPI backend at http://127.0.0.1:8000"
+      };
     }
   }
 
@@ -41,9 +60,24 @@ class ApiClient {
         method: 'POST',
         body: formData
       });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        return {
+          success: false,
+          error: errJson.error || "HTTP_ERROR",
+          message: errJson.message || errJson.detail || `HTTP Error ${res.status}: ${res.statusText}`,
+          status: res.status
+        };
+      }
+
       return await res.json();
     } catch (err) {
-      return { success: false, error: err.message };
+      return {
+        success: false,
+        error: "BACKEND_CONNECTION_FAILED",
+        message: "Unable to connect to FastAPI backend at http://127.0.0.1:8000"
+      };
     }
   }
 
@@ -54,36 +88,68 @@ class ApiClient {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ incidentId, action, riskScore, classification, audioHashSha256 })
       });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        return { success: false, error: errJson.error || "HTTP_ERROR", message: errJson.message || errJson.detail };
+      }
       return await res.json();
     } catch (err) {
-      return { success: false, error: err.message };
+      return {
+        success: false,
+        error: "BACKEND_CONNECTION_FAILED",
+        message: "Unable to connect to FastAPI backend at http://127.0.0.1:8000"
+      };
     }
   }
 
   async getModelInfo() {
     try {
       const res = await fetch(`${this.baseUrl}/api/v1/model`);
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        return { success: false, error: errJson.error || "HTTP_ERROR", message: errJson.message || errJson.detail };
+      }
       return await res.json();
     } catch (err) {
-      return { success: false, error: err.message };
+      return {
+        success: false,
+        error: "BACKEND_CONNECTION_FAILED",
+        message: "Unable to connect to FastAPI backend at http://127.0.0.1:8000"
+      };
     }
   }
 
   async getDatasets() {
     try {
       const res = await fetch(`${this.baseUrl}/api/v1/datasets`);
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        return { success: false, error: errJson.error || "HTTP_ERROR", message: errJson.message || errJson.detail };
+      }
       return await res.json();
     } catch (err) {
-      return { success: false, error: err.message };
+      return {
+        success: false,
+        error: "BACKEND_CONNECTION_FAILED",
+        message: "Unable to connect to FastAPI backend at http://127.0.0.1:8000"
+      };
     }
   }
 
   async getStats() {
     try {
       const res = await fetch(`${this.baseUrl}/api/v1/stats`);
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        return { success: false, error: errJson.error || "HTTP_ERROR", message: errJson.message || errJson.detail };
+      }
       return await res.json();
     } catch (err) {
-      return { success: false, error: err.message };
+      return {
+        success: false,
+        error: "BACKEND_CONNECTION_FAILED",
+        message: "Unable to connect to FastAPI backend at http://127.0.0.1:8000"
+      };
     }
   }
 
@@ -94,9 +160,17 @@ class ApiClient {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sipHeader, callerNumber, streamSampleRate: 16000 })
       });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        return { success: false, error: errJson.error || "HTTP_ERROR", message: errJson.message || errJson.detail };
+      }
       return await res.json();
     } catch (err) {
-      return { success: false, error: err.message };
+      return {
+        success: false,
+        error: "BACKEND_CONNECTION_FAILED",
+        message: "Unable to connect to FastAPI backend at http://127.0.0.1:8000"
+      };
     }
   }
 
@@ -107,9 +181,17 @@ class ApiClient {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ incidentId, riskScore, classification, audioHashSha256 })
       });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        return { success: false, error: errJson.error || "HTTP_ERROR", message: errJson.message || errJson.detail };
+      }
       return await res.json();
     } catch (err) {
-      return { success: false, error: err.message };
+      return {
+        success: false,
+        error: "BACKEND_CONNECTION_FAILED",
+        message: "Unable to connect to FastAPI backend at http://127.0.0.1:8000"
+      };
     }
   }
 }
