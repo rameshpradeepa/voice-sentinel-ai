@@ -1,0 +1,20 @@
+{
+  "accuracy": 100.0,
+  "precision": 100.0,
+  "recall": 100.0,
+  "f1Score": 100.0,
+  "rocAuc": 1.0,
+  "confusionMatrix": [
+    [
+      10,
+      0
+    ],
+    [
+      0,
+      4
+    ]
+  ],
+  "averageLatencyMs": 1.57,
+  "totalEvaluatedSamples": 14,
+  "evaluatedAt": "2026-09-11T09:19:17Z"
+}

@@ -1,0 +1,102 @@
+[
+  {
+    "id": "sample_01",
+    "title": "Rajesh Sharma (CFO) - Fraud Wire Request",
+    "type": "SYNTHETIC_AI_CLONE",
+    "model": "XTTS-v2 (Zero-Shot Clone)",
+    "speaker": "Rajesh Sharma",
+    "role": "Chief Financial Officer",
+    "language": "Indian English (Delhi Accent)",
+    "duration": "8.5s",
+    "riskScore": 94.2,
+    "confidence": 0.985,
+    "artifacts": ["Neural Vocoder 16kHz Cutoff", "Pitch Monotone Lock (F0 StdDev 3.1Hz)", "Phase Inconsistency"],
+    "description": "Cloned voice instructing immediate transfer of ₹4.5 Crore ($540,000) to an unverified offshore vendor account.",
+    "synthParams": {
+      "pitchMean": 144.2,
+      "pitchStdDev": 3.1,
+      "spectralCentroid": 1820,
+      "zcrUniformity": 0.94
+    }
+  },
+  {
+    "id": "sample_02",
+    "title": "Rajesh Sharma (CFO) - Authentic Verification",
+    "type": "GENUINE_HUMAN_SPEECH",
+    "model": "Human Voice Baseline",
+    "speaker": "Rajesh Sharma",
+    "role": "Chief Financial Officer",
+    "language": "Indian English (Delhi Accent)",
+    "duration": "9.2s",
+    "riskScore": 11.5,
+    "confidence": 0.992,
+    "artifacts": [],
+    "description": "Authentic voice sample recorded during official quarterly board review.",
+    "synthParams": {
+      "pitchMean": 158.4,
+      "pitchStdDev": 26.8,
+      "spectralCentroid": 2480,
+      "zcrUniformity": 0.41
+    }
+  },
+  {
+    "id": "sample_03",
+    "title": "Dr. Anita Desai - Emergency Security Clearance",
+    "type": "SYNTHETIC_AI_CLONE",
+    "model": "RVC v2 + Bark Hybrid",
+    "speaker": "Dr. Anita Desai",
+    "role": "Director (Cyber Security)",
+    "language": "Hindi / English Hybrid (Mumbai Accent)",
+    "duration": "7.0s",
+    "riskScore": 88.7,
+    "confidence": 0.962,
+    "artifacts": ["Micro-pause Cadence Anomaly", "High Frequency Phase Jitter"],
+    "description": "Deepfake voice requesting root SSH credentials for government security servers under pretext of active cyber incident.",
+    "synthParams": {
+      "pitchMean": 208.1,
+      "pitchStdDev": 4.5,
+      "spectralCentroid": 2010,
+      "zcrUniformity": 0.88
+    }
+  },
+  {
+    "id": "sample_04",
+    "title": "Dr. Anita Desai - Routine Department Meeting",
+    "type": "GENUINE_HUMAN_SPEECH",
+    "model": "Human Voice Baseline",
+    "speaker": "Dr. Anita Desai",
+    "role": "Director (Cyber Security)",
+    "language": "Hindi / English Hybrid (Mumbai Accent)",
+    "duration": "10.1s",
+    "riskScore": 8.4,
+    "confidence": 0.996,
+    "artifacts": [],
+    "description": "Legitimate call confirming weekly cybersecurity drill schedules.",
+    "synthParams": {
+      "pitchMean": 215.3,
+      "pitchStdDev": 31.2,
+      "spectralCentroid": 2890,
+      "zcrUniformity": 0.38
+    }
+  },
+  {
+    "id": "sample_05",
+    "title": "Venkatesh Iyer - Bank Account Password Reset",
+    "type": "SYNTHETIC_AI_CLONE",
+    "model": "SV2TTS (Real-Time Voice Clone)",
+    "speaker": "Venkatesh Iyer",
+    "role": "High-Net-Worth Client",
+    "language": "Tamil Accent English",
+    "duration": "6.4s",
+    "riskScore": 91.0,
+    "confidence": 0.978,
+    "artifacts": ["Spectral Tilt Distortion", "Synthesis Buffer Latency Jitter"],
+    "description": "AI-generated voice attempting to bypass bank phone banking OTP check.",
+    "synthParams": {
+      "pitchMean": 132.0,
+      "pitchStdDev": 2.8,
+      "spectralCentroid": 1750,
+      "zcrUniformity": 0.91
+    }
+  }
+]

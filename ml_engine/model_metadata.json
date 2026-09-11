@@ -1,0 +1,21 @@
+{
+  "modelName": "VoiceDeepfakeDetector (2D-CNN)",
+  "framework": "PyTorch",
+  "version": "2.0.0",
+  "sampleRateHz": 16000,
+  "inputChannels": 1,
+  "nMels": 64,
+  "nFFT": 1024,
+  "hopLength": 512,
+  "chunkDurationSec": 3.0,
+  "totalParameters": 101441,
+  "trainedEpochs": 6,
+  "trainingDurationSec": 13.71,
+  "datasetSamples": 130,
+  "targetClasses": [
+    "GENUINE",
+    "AI_GENERATED"
+  ],
+  "trainedAt": "2026-09-11T09:19:17Z",
+  "status": "TRAINED_AND_ACTIVE"
+}

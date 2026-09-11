@@ -1,0 +1,30 @@
+{
+  "datasetName": "VoiceSentinel Multi-Accent Voice Cloning Benchmark (VS-MAVC-2026)",
+  "organization": "AICTE Cyber Security Cell",
+  "version": "1.2.0",
+  "totalSamples": 5200,
+  "accentsCovered": [
+    "Indian English (North)",
+    "Indian English (South)",
+    "Hindi Dialects (Khariboli/Bhojpuri)",
+    "Tamil / Telugu Accents",
+    "Marathi Accent",
+    "Global Standard English"
+  ],
+  "synthesisArchitectures": [
+    "SV2TTS (Real-Time Voice Cloning)",
+    "XTTS-v2 (Zero-shot Multilingual Neural Cloning)",
+    "Bark (Generative Audio Model)",
+    "RVC v2 (Retrieval-based Voice Conversion)",
+    "FastSpeech2 + HiFi-GAN",
+    "VITS (Conditional Variational Autoencoder)"
+  ],
+  "detectionMetrics": {
+    "overallEER": 1.24,
+    "accuracy": 99.4,
+    "precision": 99.1,
+    "recall": 99.7,
+    "f1Score": 0.994,
+    "averageLatencyMs": 38.5
+  }
+}
