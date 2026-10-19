@@ -5,23 +5,25 @@ __pycache__/
 *.pyd
 *.so
 .venv/
+.venv*/
 venv/
 env/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 
-# Node
+# Node.js
 node_modules/
-package-lock.json
 npm-debug.log*
 
 # Environment / secrets
 .env
 .env.*
+!.env.example
 *.pem
+*.key
 
-# OS/editor
+# OS / editor
 .DS_Store
 Thumbs.db
 .vscode/
@@ -35,3 +37,6 @@ htmlcov/
 
 # Logs
 *.log
+
+# Generated model / cache files
+__pycache__/
